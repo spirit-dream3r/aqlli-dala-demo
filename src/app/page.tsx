@@ -284,10 +284,10 @@ export default function Page() {
                       color: 'white',
                     }}
                   />
-                  <Legend />
-                  <Line type="monotone" dataKey="top20" name={t('Влажность 20см', 'Namlik 20sm')} strokeWidth={2} dot={false} />
-                  <Line type="monotone" dataKey="root40" name={t('Влажность 40см', 'Namlik 40sm')} strokeWidth={2} dot={false} />
-                  <Line type="monotone" dataKey="threshold" name={t('Порог', 'Chegara')} strokeWidth={1} dot={false} />
+                  <Legend wrapperStyle={{ color: 'rgba(255,255,255,0.7)' }} />
+                  <Line type="monotone" dataKey="top20" name={t('Влажность 20см', 'Namlik 20sm')} stroke="#22d3ee" strokeWidth={2} dot={false} />
+                  <Line type="monotone" dataKey="root40" name={t('Влажность 40см', 'Namlik 40sm')} stroke="#34d399" strokeWidth={2} dot={false} />
+                  <Line type="monotone" dataKey="threshold" name={t('Порог', 'Chegara')} stroke="#fbbf24" strokeWidth={1} strokeDasharray="5 5" dot={false} />
                 </LineChart>
               </ResponsiveContainer>
             </div>
@@ -425,9 +425,9 @@ export default function Page() {
                         color: 'white',
                       }}
                     />
-                    <Legend />
-                    <Bar dataKey="before" name={t('До', 'Oldin')} />
-                    <Bar dataKey="after" name={t('После', 'Keyin')} />
+                    <Legend wrapperStyle={{ color: 'rgba(255,255,255,0.7)' }} />
+                    <Bar dataKey="before" name={t('До', 'Oldin')} fill="#ef4444" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="after" name={t('После', 'Keyin')} fill="#22c55e" radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -462,9 +462,9 @@ export default function Page() {
                         color: 'white',
                       }}
                     />
-                    <Legend />
-                    <Area dataKey="revenue" name={t('Выручка (накоп.)', 'Tushum (jam)')} fillOpacity={0.2} strokeWidth={2} />
-                    <Line type="monotone" dataKey="cost" name={t('CAPEX', 'CAPEX')} strokeWidth={2} dot={false} />
+                    <Legend wrapperStyle={{ color: 'rgba(255,255,255,0.7)' }} />
+                    <Area dataKey="revenue" name={t('Выручка (накоп.)', 'Tushum (jam)')} stroke="#22d3ee" fill="#22d3ee" fillOpacity={0.15} strokeWidth={2} />
+                    <Area dataKey="cost" name={t('CAPEX', 'CAPEX')} stroke="#f87171" fill="#f87171" fillOpacity={0.08} strokeWidth={2} strokeDasharray="5 5" />
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
