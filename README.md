@@ -1,38 +1,55 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Aqlli Dala (Умное Поле)
 
-## Getting Started
+Интеллектуальная система контроля влажности почвы для фермеров Узбекистана.
 
-First, run the development server:
+## Структура проекта
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+```text
+aqlli-dala-landing/
+├── backend/
+│   ├── main.py              # Сервер (FastAPI)
+│   ├── bot.py               # Telegram бот (aiogram)
+│   ├── database.py          # Работа с БД (SQLAlchemy)
+│   ├── config.py            # Настройки (Pydantic Settings)
+│   ├── requirements.txt     # Зависимости Python
+│   └── .env                 # Переменные окружения
+├── firmware/
+│   └── esp32_sensor.ino     # Прошивка для ESP32 (Arduino)
+├── database/
+│   └── aqlli_dala.db        # SQLite база (создается автоматически)
+├── src/                     # Фронтенд (Next.js)
+├── functions/               # Cloud Functions (Firebase)
+└── README.md
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Установка и запуск
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 1. Backend (Python)
+Требуется Python 3.9+
+```bash
+cd backend
+python -m venv venv
+source venv/bin/activate  # На Windows: venv\Scripts\activate
+pip install -r requirements.txt
+uvicorn main:app --reload
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 2. Telegram Бот
+```bash
+# В активированном venv
+python bot.py
+```
 
-## Learn More
+### 3. Frontend (Next.js)
+```bash
+npm install
+npm run dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+### 4. Прошивка ESP32
+Откройте `firmware/esp32_sensor.ino` в Arduino IDE, укажите свои настройки WiFi и адрес сервера, затем загрузите в контроллер.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-# aqlli-dala-demo
-# aqlli-dala-demo
+## Возможности
+- **Мониторинг**: Снятие показаний влажности на глубине 20 и 40 см.
+- **Уведомления**: Оперативная отправка данных в Telegram.
+- **Экономия**: До 30% экономии воды за счет точного полива.
