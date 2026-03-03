@@ -1,0 +1,99 @@
+version: '3.9'
+
+services:
+  # ==================== DATABASE ====================
+  db:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-aqlli_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-aqlli_pass}
+      POSTGRES_DB: ${POSTGRES_DB:-aqlli_dala}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-aqlli_user} -d ${POSTGRES_DB:-aqlli_dala}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - aqlli_network
+
+  # ==================== BACKEND ====================
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
+      TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID}
+      TELEGRAM_WEBHOOK_SECRET: ${TELEGRAM_WEBHOOK_SECRET}
+      DATABASE_URL: ${DATABASE_URL:-postgresql://aqlli_user:aqlli_pass@db/aqlli_dala}
+      HOST: ${HOST:-0.0.0.0}
+      PORT: ${PORT:-8000}
+      DB_POOL_SIZE: ${DB_POOL_SIZE:-10}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:3000,http://127.0.0.1:3000}
+      RATE_LIMIT_PER_MINUTE: ${RATE_LIMIT_PER_MINUTE:-5}
+      RATE_LIMIT_ENABLED: ${RATE_LIMIT_ENABLED:-true}
+      MOISTURE_THRESHOLD: ${MOISTURE_THRESHOLD:-25}
+      ALERT_CHECK_INTERVAL: ${ALERT_CHECK_INTERVAL:-300}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      JWT_ALGORITHM: ${JWT_ALGORITHM:-HS256}
+      JWT_EXPIRATION_HOURS: ${JWT_EXPIRATION_HOURS:-24}
+      ENVIRONMENT: ${ENVIRONMENT:-development}
+    volumes:
+      - ./backend/media:/app/media
+      - ./backend/logs:/app/logs
+    ports:
+      - "${BACKEND_PORT:-8000}:${PORT:-8000}"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:${PORT:-8000}/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - aqlli_network
+
+  # ==================== FRONTEND ====================
+  frontend:
+    image: node:20-alpine
+    restart: unless-stopped
+    working_dir: /app
+    volumes:
+      - ./src:/app/src
+      - ./package.json:/app/package.json
+      - ./package-lock.json:/app/package-lock.json
+      - ./next.config.ts:/app/next.config.ts
+      - ./tsconfig.json:/app/tsconfig.json
+    environment:
+      NEXT_PUBLIC_BACKEND_URL: ${NEXT_PUBLIC_BACKEND_URL:-http://localhost:8000}
+    command: sh -c "npm ci && npm run dev"
+    ports:
+      - "${FRONTEND_PORT:-3000}:3000"
+    depends_on:
+      - backend
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    networks:
+      - aqlli_network
+
+volumes:
+  db_data:
+    driver: local
+
+networks:
+  aqlli_network:
+    driver: bridge

@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aqlli Dala - Интерактивная Демонстрация</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #070A12 0%, #1a1f35 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        h1 {
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #10b981, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .subtitle { text-align: center; color: #94a3b8; margin-bottom: 40px; }
+        .step {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+            backdrop-filter: blur(10px);
+        }
+        .step-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #10b981, #3b82f6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        .step-title { font-size: 1.5em; font-weight: 600; }
+        .step-description { color: #94a3b8; margin-bottom: 16px; }
+        .api-box {
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 16px;
+            font-family: 'Consolas', monospace;
+            font-size: 0.9em;
+            overflow-x: auto;
+        }
+        .method {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+        .method-get { background: #1f6feb; }
+        .method-post { background: #238636; }
+        .url { color: #58a6ff; }
+        .response {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #30363d;
+        }
+        .response-title { color: #8b949e; font-size: 0.85em; margin-bottom: 8px; }
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+        .status-success { background: #238636; }
+        .status-pending { background: #6e7681; }
+        .status-error { background: #da3633; }
+        button {
+            background: linear-gradient(135deg, #10b981, #3b82f6);
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        button:hover { transform: scale(1.05); }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        .buttons { display: flex; gap: 12px; margin-top: 16px; }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; margin-bottom: 8px; color: #8b949e; }
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            background: #0d1117;
+            color: white;
+            font-size: 1em;
+        }
+        .form-group input:focus { outline: 2px solid #10b981; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+        .token-display {
+            background: #0d1117;
+            padding: 12px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 0.85em;
+            word-break: break-all;
+            margin-top: 8px;
+            border: 1px solid #30363d;
+        }
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+            margin-top: 24px;
+        }
+        .feature-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+        .feature-icon { font-size: 2.5em; margin-bottom: 12px; }
+        .feature-title { font-weight: 600; margin-bottom: 8px; }
+        .feature-desc { color: #94a3b8; font-size: 0.9em; }
+        .loading { animation: pulse 2s infinite; }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        pre { white-space: pre-wrap; word-wrap: break-word; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌾 Aqlli Dala</h1>
+        <p class="subtitle">Интерактивная демонстрация IoT платформы для умного полива</p>
+
+        <!-- Feature Overview -->
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🔐</div>
+                <div class="feature-title">JWT Аутентификация</div>
+                <div class="feature-desc">Безопасный вход и регистрация</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <div class="feature-title">Телеметрия</div>
+                <div class="feature-desc">Мониторинг влажности почвы</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📄</div>
+                <div class="feature-title">PDF/Excel Отчеты</div>
+                <div class="feature-desc">Экспорт данных за любой период</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🗺</div>
+                <div class="feature-title">Карта полей</div>
+                <div class="feature-desc">GPS координаты и статус</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🌤</div>
+                <div class="feature-title">Погода</div>
+                <div class="feature-desc">Прогноз и рекомендации</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📱</div>
+                <div class="feature-title">SMS Уведомления</div>
+                <div class="feature-desc">Тревоги через Click SMS</div>
+            </div>
+        </div>
+
+        <br><br>
+
+        <!-- Step 1: Health Check -->
+        <div class="step">
+            <div class="step-header">
+                <div class="step-number">1</div>
+                <div class="step-title">Проверка здоровья API</div>
+            </div>
+            <p class="step-description">Убедимся что backend работает корректно</p>
+            <div class="buttons">
+                <button onclick="testHealth()">🔍 Проверить</button>
+            </div>
+            <div id="health-result" style="margin-top: 16px;"></div>
+        </div>
+
+        <!-- Step 2: Registration -->
+        <div class="step">
+            <div class="step-header">
+                <div class="step-number">2</div>
+                <div class="step-title">Регистрация пользователя</div>
+            </div>
+            <p class="step-description">Создадим нового пользователя для демонстрации</p>
+            <div class="grid">
+                <div class="form-group">
+                    <label>ФИО / Название хозяйства</label>
+                    <input type="text" id="reg-name" value="Демо Фермер" placeholder="Иван Иванов">
+                </div>
+                <div class="form-group">
+                    <label>Номер телефона</label>
+                    <input type="tel" id="reg-phone" value="+998901234567" placeholder="+998 90 123 45 67">
+                </div>
+                <div class="form-group">
+                    <label>Пароль</label>
+                    <input type="password" id="reg-password" value="demo123" placeholder="••••••••">
+                </div>
+            </div>
+            <div class="buttons">
+                <button onclick="register()">📝 Зарегистрироваться</button>
+            </div>
+            <div id="register-result" style="margin-top: 16px;"></div>
+        </div>
+
+        <!-- Step 3: Login -->
+        <div class="step">
+            <div class="step-header">
+                <div class="step-number">3</div>
+                <div class="step-title">Вход в систему</div>
+            </div>
+            <p class="step-description">Получим JWT токены для доступа к API</p>
+            <div class="grid">
+                <div class="form-group">
+                    <label>Номер телефона</label>
+                    <input type="tel" id="login-phone" value="+998901234567">
+                </div>
+                <div class="form-group">
+                    <label>Пароль</label>
+                    <input type="password" id="login-password" value="demo123">
+                </div>
+            </div>
+            <div class="buttons">
+                <button onclick="login()">🔑 Войти</button>
+            </div>
+            <div id="login-result" style="margin-top: 16px;"></div>
+        </div>
+
+        <!-- Step 4: Create Field -->
+        <div class="step">
+            <div class="step-header">
+                <div class="step-number">4</div>
+                <div class="step-title">Создание поля</div>
+            </div>
+            <p class="step-description">Добавим новое поле для мониторинга</p>
+            <div class="grid">
+                <div class="form-group">
+                    <label>Название поля</label>
+                    <input type="text" id="field-name" value="Demo Field 1">
+                </div>
+                <div class="form-group">
+                    <label>Культура</label>
+                    <select id="field-crop">
+                        <option value="Cotton">Хлопок (Cotton)</option>
+                        <option value="Wheat">Пшеница (Wheat)</option>
+                        <option value="Corn">Кукуруза (Corn)</option>
+                        <option value="Rice">Рис (Rice)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Площадь (га)</label>
+                    <input type="number" id="field-area" value="5.0" step="0.1">
+                </div>
+            </div>
+            <div class="buttons">
+                <button onclick="createField()" id="btn-create-field" disabled>🌾 Создать поле</button>
+            </div>
+            <div id="field-result" style="margin-top: 16px;"></div>
+        </div>
+
+        <!-- Step 5: Send Telemetry -->
+        <div class="step">
+            <div class="step-header">
+                <div class="step-number">5</div>
+                <div class="step-title">Отправка телеметрии</div>
+            </div>
+            <p class="step-description">Симулируем данные с датчиков влажности</p>
+            <div class="grid">
+                <div class="form-group">
+                    <label>Влажность (%)</label>
+                    <input type="number" id="telem-moisture" value="28" min="0" max="100">
+                </div>
+                <div class="form-group">
+                    <label>Температура (°C)</label>
+                    <input type="number" id="telem-temp" value="25.5" step="0.1">
+                </div>
+                <div class="form-group">
+                    <label>Батарея (%)</label>
+                    <input type="number" id="telem-battery" value="95" min="0" max="100">
+                </div>
+            </div>
+            <div class="buttons">
+                <button onclick="sendTelemetry()" id="btn-telemetry" disabled>📡 Отправить данные</button>
+            </div>
+            <div id="telemetry-result" style="margin-top: 16px;"></div>
+        </div>
+
+        <!-- Step 6: Export Report -->
+        <div class="step">
+            <div class="step-header">
+                <div class="step-number">6</div>
+                <div class="step-title">Экспорт отчета</div>
+            </div>
+            <p class="step-description">Скачаем отчет в PDF или Excel формате</p>
+            <div class="grid">
+                <div class="form-group">
+                    <label>Формат</label>
+                    <select id="report-format">
+                        <option value="pdf">PDF (для печати)</option>
+                        <option value="xlsx">Excel (для анализа)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Период (дней)</label>
+                    <select id="report-days">
+                        <option value="7">7 дней</option>
+                        <option value="14">14 дней</option>
+                        <option value="30">30 дней</option>
+                    </select>
+                </div>
+            </div>
+            <div class="buttons">
+                <button onclick="exportReport()" id="btn-export" disabled>📄 Скачать отчет</button>
+            </div>
+            <div id="report-result" style="margin-top: 16px;"></div>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="step">
+            <div class="step-header">
+                <div class="step-number">🔗</div>
+                <div class="step-title">Полезные ссылки</div>
+            </div>
+            <div class="buttons">
+                <button onclick="window.open('http://localhost:8000/docs', '_blank')">📚 Swagger UI (API Docs)</button>
+                <button onclick="window.open('http://localhost:3000', '_blank')">🏠 Frontend (Главная)</button>
+                <button onclick="window.open('http://localhost:3000/dashboard', '_blank')">👤 Личный кабинет</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:8000';
+        let accessToken = '';
+        let currentField = '';
+
+        function showResult(elementId, data, success = true) {
+            const el = document.getElementById(elementId);
+            const statusClass = success ? 'status-success' : 'status-error';
+            const statusText = success ? '✅ Успешно' : '❌ Ошибка';
+            el.innerHTML = `
+                <div class="api-box">
+                    <div class="response-title">Результат <span class="status-badge ${statusClass}">${statusText}</span></div>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                </div>
+            `;
+        }
+
+        async function testHealth() {
+            const resultEl = document.getElementById('health-result');
+            resultEl.innerHTML = '<div class="loading">⏳ Проверка...</div>';
+            
+            try {
+                const response = await fetch(`${API_URL}/health`);
+                const data = await response.json();
+                showResult('health-result', data, true);
+            } catch (error) {
+                showResult('health-result', { error: error.message }, false);
+            }
+        }
+
+        async function register() {
+            const name = document.getElementById('reg-name').value;
+            const phone = document.getElementById('reg-phone').value;
+            const password = document.getElementById('reg-password').value;
+            
+            const resultEl = document.getElementById('register-result');
+            resultEl.innerHTML = '<div class="loading">⏳ Регистрация...</div>';
+            
+            try {
+                const response = await fetch(`${API_URL}/api/auth/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ full_name: name, phone_number: phone, password: password })
+                });
+                const data = await response.json();
+                
+                if (response.ok) {
+                    accessToken = data.access_token;
+                    showResult('register-result', { 
+                        message: 'Регистрация успешна!',
+                        tokens: { access_token: data.access_token.substring(0, 50) + '...', refresh_token: data.refresh_token.substring(0, 50) + '...' }
+                    }, true);
+                    document.getElementById('btn-create-field').disabled = false;
+                } else {
+                    showResult('register-result', data, false);
+                }
+            } catch (error) {
+                showResult('register-result', { error: error.message }, false);
+            }
+        }
+
+        async function login() {
+            const phone = document.getElementById('login-phone').value;
+            const password = document.getElementById('login-password').value;
+            
+            const resultEl = document.getElementById('login-result');
+            resultEl.innerHTML = '<div class="loading">⏳ Вход...</div>';
+            
+            try {
+                const response = await fetch(`${API_URL}/api/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ phone_number: phone, password: password })
+                });
+                const data = await response.json();
+                
+                if (response.ok) {
+                    accessToken = data.access_token;
+                    showResult('login-result', { 
+                        message: 'Вход успешен!',
+                        tokens: { access_token: data.access_token.substring(0, 50) + '...' }
+                    }, true);
+                    document.getElementById('btn-create-field').disabled = false;
+                    document.getElementById('btn-telemetry').disabled = false;
+                    document.getElementById('btn-export').disabled = false;
+                } else {
+                    showResult('login-result', data, false);
+                }
+            } catch (error) {
+                showResult('login-result', { error: error.message }, false);
+            }
+        }
+
+        async function createField() {
+            const fieldName = document.getElementById('field-name').value;
+            const crop = document.getElementById('field-crop').value;
+            const area = parseFloat(document.getElementById('field-area').value);
+            
+            const resultEl = document.getElementById('field-result');
+            resultEl.innerHTML = '<div class="loading">⏳ Создание поля...</div>';
+            
+            try {
+                const response = await fetch(`${API_URL}/api/fields`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${accessToken}`
+                    },
+                    body: JSON.stringify({ 
+                        field_name: fieldName, 
+                        crop_type: crop,
+                        area_hectares: area,
+                        latitude: 41.3115,
+                        longitude: 69.2401
+                    })
+                });
+                const data = await response.json();
+                
+                if (response.ok || response.status === 409) {
+                    currentField = fieldName;
+                    showResult('field-result', { 
+                        message: response.status === 409 ? 'Поле уже существует' : 'Поле создано!',
+                        field: data
+                    }, true);
+                    document.getElementById('btn-telemetry').disabled = false;
+                    document.getElementById('btn-export').disabled = false;
+                } else {
+                    showResult('field-result', data, false);
+                }
+            } catch (error) {
+                showResult('field-result', { error: error.message }, false);
+            }
+        }
+
+        async function sendTelemetry() {
+            const moisture = parseInt(document.getElementById('telem-moisture').value);
+            const temp = parseFloat(document.getElementById('telem-temp').value);
+            const battery = parseInt(document.getElementById('telem-battery').value);
+            
+            const resultEl = document.getElementById('telemetry-result');
+            resultEl.innerHTML = '<div class="loading">⏳ Отправка данных...</div>';
+            
+            try {
+                const response = await fetch(`${API_URL}/api/telemetry`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        field_id: currentField || 'Demo Field 1',
+                        moisture: moisture,
+                        temperature: temp,
+                        battery: battery
+                    })
+                });
+                const data = await response.json();
+                
+                showResult('telemetry-result', data, response.ok);
+            } catch (error) {
+                showResult('telemetry-result', { error: error.message }, false);
+            }
+        }
+
+        async function exportReport() {
+            const format = document.getElementById('report-format').value;
+            const days = document.getElementById('report-days').value;
+            const fieldName = currentField || 'Demo Field 1';
+            
+            const resultEl = document.getElementById('report-result');
+            resultEl.innerHTML = '<div class="loading">⏳ Генерация отчета...</div>';
+            
+            try {
+                const response = await fetch(
+                    `${API_URL}/api/reports/${fieldName}/export?format=${format}&days=${days}`,
+                    {
+                        headers: { 'Authorization': `Bearer ${accessToken}` }
+                    }
+                );
+                
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `${fieldName}_report_${days}d.${format}`;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                    
+                    showResult('report-result', { 
+                        message: `Отчет ${format.toUpperCase()} успешно скачан!`,
+                        filename: `${fieldName}_report_${days}d.${format}`
+                    }, true);
+                } else {
+                    const error = await response.text();
+                    showResult('report-result', { error: error }, false);
+                }
+            } catch (error) {
+                showResult('report-result', { error: error.message }, false);
+            }
+        }
+    </script>
+</body>
+</html>

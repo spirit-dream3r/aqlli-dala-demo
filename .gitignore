@@ -1,6 +1,112 @@
-node_modules
-.next
-out
-.DS_Store
+# ==================== PYTHON ====================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# ==================== VIRTUAL ENVIRONMENTS ====================
+venv/
+env/
+ENV/
+.venv
+.pytest_cache/
+.coverage
+htmlcov/
+
+# ==================== IDE ====================
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.project
+.pydevproject
+.settings/
+
+# ==================== ENVIRONMENT VARIABLES ====================
+.env
+.env.local
+.env.production
+.env.test
+
+# ==================== DATABASE ====================
+*.db
+*.db-journal
+aqlli_dala.db
+.db
+
+# ==================== LOGS ====================
+logs/
 *.log
-.env*
+
+# ==================== MEDIA ====================
+media/
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.webp
+
+# ==================== OS ====================
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# ==================== TESTING ====================
+.coverage
+htmlcov/
+.tox/
+.nox/
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+
+# ==================== MYPY ====================
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# ==================== PYRIGHT ====================
+.pyrightcache/
+
+# ==================== NEXT.JS ====================
+.next/
+out/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ==================== NODE ====================
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# ==================== BUILD OUTPUT ====================
+.next/
+out/
+build/
+dist/
+
+# ==================== MISCELLANEOUS ====================
+*.pem
+*.key
+*.crt
+*.orig
