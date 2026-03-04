@@ -1,0 +1,3 @@
+%cpp -std=gnu++17
+-I${workspaceFolder}/firmware
+%include %c
